@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>PAPER FRAGMENTS · 碎纸诗</title>
+  <meta name="description" content="把偶然遇见的词，拼成只属于你的诗。Make poetry out of little things." />
+
+  <!-- 文学气质字体（Google Fonts，离线时回退至系统衬线/手写） -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital@0;1&family=Noto+Serif+SC:wght@400;600;700&family=Long+Cang&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ===== 顶部品牌区 ===== -->
+  <header class="topbar">
+    <div class="brand">
+      <h1 class="brand-title">PAPER FRAGMENTS</h1>
+      <p class="brand-sub">碎纸诗 · <span class="italic">Make poetry out of little things.</span></p>
+    </div>
+    <p class="brand-slogan">「把偶然遇见的词，拼成只属于你的诗。」</p>
+    <button id="btn-reset-top" class="btn btn-ghost" title="清空画布，重新开始">重新开始</button>
+  </header>
+
+  <!-- ===== 主体三栏 ===== -->
+  <main class="workspace">
+
+    <!-- 左：随机文字素材 -->
+    <aside class="tray-panel" id="tray-panel">
+      <div class="panel-head">
+        <span class="panel-title">文字素材</span>
+        <button id="btn-redraw" class="btn btn-mini">重新抽取</button>
+      </div>
+      <div class="tray-hint" id="tray-hint">拖动词条到画布，或轻点添加 ↓</div>
+      <div class="tray" id="tray"></div>
+    </aside>
+
+    <!-- 中：创作画布 -->
+    <section class="stage">
+      <div class="canvas-wrap" id="canvas-wrap">
+        <div class="paper" id="paper">
+          <div class="paper-texture" id="paper-texture"></div>
+          <div class="elements-layer" id="elements-layer"></div>
+          <div class="canvas-hint" id="canvas-hint">把左边的文字拖到这里，<br/>拼一首只属于你的诗。</div>
+        </div>
+      </div>
+      <p class="stage-tip">提示：点击画布上的纸条可编辑颜色 / 字体 / 文字；拖动可自由排列。</p>
+    </section>
+
+    <!-- 右：创作工具栏 -->
+    <aside class="tools-panel" id="tools-panel">
+      <div class="tool-group">
+        <span class="group-title">编辑</span>
+        <div class="tool-row">
+          <button id="btn-undo" class="btn btn-tool" title="撤销">↶ 撤销</button>
+          <button id="btn-redo" class="btn btn-tool" title="恢复">↷ 恢复</button>
+        </div>
+        <div class="tool-row">
+          <button id="btn-delete" class="btn btn-tool" title="删除选中">🗑 删除</button>
+          <button id="btn-redraw2" class="btn btn-tool" title="重新抽取素材">⟳ 重抽</button>
+        </div>
+      </div>
+
+      <div class="tool-group">
+        <span class="group-title">纸张背景</span>
+        <div class="bg-swatches" id="bg-swatches"></div>
+      </div>
+
+      <div class="tool-group">
+        <span class="group-title">纸条样式</span>
+        <div class="style-presets" id="style-presets"></div>
+      </div>
+
+      <div class="tool-group">
+        <span class="group-title">贴纸</span>
+        <div class="sticker-grid" id="sticker-grid"></div>
+      </div>
+
+      <div class="tool-group">
+        <span class="group-title">和纸胶带</span>
+        <div class="tape-grid" id="tape-grid"></div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ===== 底部操作栏 ===== -->
+  <footer class="bottombar">
+    <p class="foot-hint" id="foot-hint">无需教程 — 拖、贴、拼，剩下的交给偶然。</p>
+    <div class="foot-actions">
+      <button id="btn-save" class="btn btn-soft">保存作品</button>
+      <button id="btn-export" class="btn btn-primary">完成 / 导出</button>
+    </div>
+  </footer>
+
+  <!-- ===== 浮动编辑菜单（选中纸条时出现） ===== -->
+  <div class="edit-menu" id="edit-menu" hidden>
+    <div class="em-row">
+      <span class="em-label">字</span>
+      <div class="em-colors" id="em-colors"></div>
+    </div>
+    <div class="em-row">
+      <span class="em-label">底</span>
+      <div class="em-colors" id="em-bgcolors"></div>
+    </div>
+    <div class="em-row">
+      <span class="em-label">体</span>
+      <div class="em-fonts" id="em-fonts"></div>
+    </div>
+    <div class="em-row em-tools">
+      <button class="em-btn" id="em-smaller" title="缩小">A−</button>
+      <button class="em-btn" id="em-bigger" title="放大">A+</button>
+      <button class="em-btn" id="em-rotL" title="左转">⟲</button>
+      <button class="em-btn" id="em-rotR" title="右转">⟳</button>
+      <button class="em-btn" id="em-edit" title="修改文字">✎</button>
+      <button class="em-btn em-danger" id="em-delete" title="删除">🗑</button>
+    </div>
+  </div>
+
+  <!-- ===== 完成预览 / 导出弹窗 ===== -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-card">
+      <h2 class="modal-title">你的诗，拼好了</h2>
+      <p class="modal-poem">原来这些偶然相遇的词，也可以成为一首诗。<br/><span class="italic">Something beautiful came together.</span></p>
+      <div class="modal-preview">
+        <img id="modal-img" alt="作品预览" />
+      </div>
+      <div class="modal-actions">
+        <button id="btn-download" class="btn btn-primary">下载 PNG</button>
+        <button id="btn-continue" class="btn btn-soft">返回继续</button>
+        <button id="btn-restart" class="btn btn-ghost">重新创作</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 恢复上次创作提示 ===== -->
+  <div class="modal" id="restore-modal" hidden>
+    <div class="modal-card modal-card-sm">
+      <h2 class="modal-title">发现未完成的诗</h2>
+      <p class="modal-poem">要不要继续上一次的创作？</p>
+      <div class="modal-actions">
+        <button id="btn-restore-yes" class="btn btn-primary">继续创作</button>
+        <button id="btn-restore-no" class="btn btn-ghost">从头开始</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="words.js"></script>
+  <script src="stickers.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
