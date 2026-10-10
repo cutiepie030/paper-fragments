@@ -1,0 +1,13 @@
+# WorkBuddy project data (do not commit)
+.workbuddy/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+
+# Dependencies (none needed, but keep clean)
+node_modules/
+
+# Local test artifacts
+_test_*.png
